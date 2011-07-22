@@ -186,7 +186,7 @@ int generate_database(string basedir)
 	}
 	
 	cmd.erase();
-	cmd = "CREATE TABLE tags (albumid INTEGER, tag TEXT, number TEXT)";
+	cmd = "CREATE TABLE tags (albumid INTEGER, tag TEXT, number INTEGER)";
 	
 	rc = sqlite3_exec(db, cmd.c_str(), NULL, NULL, &err);
 	if(rc != SQLITE_OK) {
