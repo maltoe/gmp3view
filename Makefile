@@ -2,7 +2,7 @@
 # Makefile for gmp3view
 #
 
-VERSION=0.4.1
+VERSION=0.4.2alpha1
 
 PREFIX=/usr/local
 CC=gcc

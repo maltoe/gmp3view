@@ -9,6 +9,6 @@
 
 #define LASTFM_KEY "f263e056c82addecb074209a1fa97977"
 
-#define VERSION "0.4.1 GCC strikes back"
+#define VERSION "0.4.2alpha1"
 
 #endif /* __CONFIG_H__ */

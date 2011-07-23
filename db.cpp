@@ -3,7 +3,7 @@
 //{{{ License
 /*
 *   This file is part of gmp3view.
-*   (c) 2006-2008 Malte Rohde
+*   (c) 2006-2011 Malte Rohde
 *
 *   gmp3view is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
