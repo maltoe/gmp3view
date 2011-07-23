@@ -7,6 +7,8 @@
 #define MP3_IMAGE "/usr/local/share/gmp3view/mp3.png"			/* This file is shown as a mp3 file's icon */
 #define NUM_TAGS 12												/* Adjust to read more tags (set to <=0 for all tags)*/
 
+#define LASTFM_KEY "f263e056c82addecb074209a1fa97977"
+
 #define VERSION "0.4.1 GCC strikes back"
 
 #endif /* __CONFIG_H__ */

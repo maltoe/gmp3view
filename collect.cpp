@@ -42,7 +42,7 @@ int add_album_real(string letter, string album);
 int add_file(string albumid, string path);
 int album_added_cb(void *data, int argc, char **argv, char **azColName);
 int scan_dir(string path, string albumid);
-/*int load_album_tags(string albumid, string artist, string title);*/
+int load_album_tags(string albumid, string artist, string title);
 int load_artist_tags(string albumid, string artist);
 int parse_filename(string name, string *artist, string *title, string *tracknumber);
 string extract_artist(string name);
@@ -238,7 +238,7 @@ int album_added_cb(void *data, int argc, char **argv, char **azColName)
 	
 	/* Try to download tags */
 	if(!artist.empty()) {
-		//if(load_album_tags(albumid, artist, title) < NUM_TAGS)
+		if(load_album_tags(albumid, artist, title) < NUM_TAGS)
 			load_artist_tags(albumid, artist);
 	}
 	return 0;	
@@ -271,10 +271,7 @@ int scan_dir(string path, string albumid)
 	
 	return 0;	
 }
-/***************************
- *Slated for removal due to*
- *crappy last.fm album tags*
- ***************************
+
 int load_album_tags(string albumid, string artist, string title)
 {
 	string toptags = getenv("HOME");
@@ -292,16 +289,17 @@ int load_album_tags(string albumid, string artist, string title)
 		//do nothing
 	} else {
 #ifdef _DEBUG_
-		cout << "Downloading tags for " << title << endl;
+		cout << "Downloading tags for " << artist << "-" << title << endl;
 #endif
-	
 		string wget = "wget -q -O \"";
 		wget += toptags;
-		wget += "\" \"http://ws.audioscrobbler.com/1.0/album/";
+		wget += "\" \"http://ws.audioscrobbler.com/2.0/?method=album.gettoptags&artist=";
 		wget += artist;
-		wget += "/";
+		wget += "&album=";
 		wget += title;
-		wget += "/toptags.xml\"";
+		wget += "&autocorrect=1&api_key=";
+		wget += LASTFM_KEY;
+		wget += "\"";
 		system(wget.c_str());	
 		
 		if(!g_file_test(toptags.c_str(), G_FILE_TEST_EXISTS)) {
@@ -310,8 +308,9 @@ int load_album_tags(string albumid, string artist, string title)
 		}
 	}
 
+  // TODO parse_toptags most likely won't parse the new album toptags correctly!
 	return parse_toptags(toptags, albumid);	
-}*/
+}
 
 int load_artist_tags(string albumid, string artist)
 {
