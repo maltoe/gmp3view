@@ -36,7 +36,9 @@ using namespace std;
 
 //{{{ Prototypes
 int add_directory(string letter);
-int add_album(string letter, string album);
+void add_album(string letter, string album);
+int album_exists_cb(void *data, int argc, char **argv, char **azColName);
+int add_album_real(string letter, string album);
 int add_file(string albumid, string path);
 int album_added_cb(void *data, int argc, char **argv, char **azColName);
 int scan_dir(string path, string albumid);
@@ -53,15 +55,18 @@ int parse_toptags(string toptags, string albumid);
 
 //{{{ Globals
 static string basedir;
+static bool isUpdate;
 //}}}
 
 //{{{ Main
-int collect(string _basedir) {
+int collect(string _basedir, bool _isUpdate) {
 	
 	if(*(--_basedir.end()) == '/')
 		basedir = _basedir;
 	else
 		basedir = _basedir + '/';
+		
+  isUpdate = _isUpdate;
 	
 	/* Check for existance of tags directory */
 	create_tag_dir();
@@ -112,7 +117,41 @@ int add_directory(string letter)
 	return 0;
 }
 
-int add_album(string letter, string album)
+struct album_basics {
+  string path;
+  string letter;
+  string album;
+};
+
+void add_album(string letter, string album)
+{
+  if(!isUpdate)
+    add_album_real(letter, album);
+  else {
+    album_basics* ab = new album_basics;
+    ab->path = basedir + letter + '/' + album;
+    ab->letter = letter;
+    ab->album = album;
+    
+    string albumexists = "SELECT id FROM albums WHERE path = \"";
+    albumexists += ab->path;
+    albumexists += "\";";
+    execute_query(albumexists, album_exists_cb, ab);
+  }
+}
+
+int album_exists_cb(void *data, int argc, char **argv, char **azColName)
+{
+  album_basics* ab = (album_basics*) data;
+
+  if(argc == 0)
+    add_album_real(ab->letter, ab->album);
+  
+  delete ab;
+  return 0;
+}
+
+int add_album_real(string letter, string album)
 {
 	string artist = extract_artist(album);
 	string year = extract_year(album);

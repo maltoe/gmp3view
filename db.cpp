@@ -26,7 +26,6 @@ using namespace std;
 #include <string>
 #include <iostream>
 #include <sqlite3.h>
-#include "collect.h"
 #include "db.h"
 #include "config.h"
 
@@ -194,9 +193,5 @@ int generate_database(string basedir)
 		sqlite3_free(err);
 	}
 
-	/* Scan library */
-	cout << "Collecting data..." << endl;
-	collect(basedir);	
-	
 	return 0;
 }

@@ -30,6 +30,7 @@ using namespace std;
 #include "interface.h"
 #include "config.h"
 #include "db.h"
+#include "collect.h"
 //}}}
 
 //{{{ Main
@@ -40,7 +41,7 @@ int main(int argc, char *argv[])
 	if(initialise_database())
 		return 1;
 	
-	/* first argument means new database */
+	/* first argument means update/create database */
 	if(argc > 1) {
 
 			string basedir = argv[1];
@@ -49,17 +50,22 @@ int main(int argc, char *argv[])
 				return 1;
 			}
 			
+			// If no third parameter is given, re-create the db.
+			if(argc == 2)
+  			generate_database(basedir);
+
 #ifdef _DEBUG_
-			GTimer *tim;
-			tim = g_timer_new();
-			g_timer_start(tim);
-#endif				
-			generate_database(basedir);
+		  GTimer *tim;
+		  tim = g_timer_new();
+		  g_timer_start(tim);
+#endif				  
+	    /* Scan library */
+	    cout << "Collecting data..." << endl;
+	    collect(basedir, (argc > 2));	
 #ifdef _DEBUG_
-			cout << "Time elapsed while generating the db: " << g_timer_elapsed(tim, NULL) << endl;
+			cout << "Time elapsed while updating the db: " << g_timer_elapsed(tim, NULL) << endl;
 			g_timer_stop(tim);
 #endif
-
 	}
 	
 	run_interface();
