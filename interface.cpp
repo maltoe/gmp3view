@@ -60,6 +60,7 @@ void search_clicked(GtkButton *button, gpointer data);
 GtkWidget *prepare_typeahead(void);
 gboolean typeahead_key_released(GtkWidget *typeahead, GdkEventKey *event, gpointer data);
 string ToUpper(string str);
+int tstore_tags_cb(void *data, int argc, char **argv, char **azColName);
 int albums_execute_query_cb(void *data, int argc, char **argv, char **azColName);
 int tooltip_execute_query_cb(void *data, int argc, char **argv, char **azColName);
 
@@ -80,6 +81,7 @@ enum {
 
 //{{{ Globals
 static GtkWidget *iv;
+static GtkWidget *tv;
 static GtkWidget *scrolled_window;
 static GtkWidget *typeahead;
 static bool block_clicks = false;
@@ -160,7 +162,7 @@ static void destroy(GtkWidget *widget, gpointer data)
 GtkWidget *prepare_treeview(void) {
 	GtkTreeStore *tstore = create_tstore();
 	
-	GtkWidget *tv = gtk_tree_view_new_with_model(GTK_TREE_MODEL(tstore));
+  tv = gtk_tree_view_new_with_model(GTK_TREE_MODEL(tstore));
 	
 	GtkTreeViewColumn *col = gtk_tree_view_column_new();
 	gtk_tree_view_append_column(GTK_TREE_VIEW(tv), col);
@@ -216,8 +218,14 @@ void fill_tstore(GtkTreeStore *tstore)
 		gtk_tree_store_insert_with_values(tstore, NULL, &parent, 10000, COL_TEXT, buf, COL_QUERY, g_strdup(cmd.c_str()), -1);
 	}
 	
-	GtkTreeIter *parent_p = NULL;
+	/* Add the top tags per default */
+	GtkTreeIter *tagparent = new GtkTreeIter;
+	gtk_tree_store_insert_with_values(tstore, tagparent, NULL, 10000, COL_TEXT, "Top tags", -1);
+	string tagcmd = "SELECT tag FROM tags GROUP BY tag HAVING SUM(number) > 1000";
+	execute_query(tagcmd, tstore_tags_cb, (void*) tagparent);	
 	
+	// HOME/.gmp3view/query.lst
+	GtkTreeIter *parent_p = NULL;
 	string path = getenv("HOME");
 	path += CFG_PREFIX;
 	path += QUERIES;
@@ -616,6 +624,25 @@ string ToUpper(string str)
 //}}}
 
 //{{{ SQL callbacks
+int tstore_tags_cb(void *data, int argc, char **argv, char **azColName)
+{
+  if (argc != 1)
+    return 1;
+
+  GtkTreeStore *tstore = GTK_TREE_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(tv)));
+  GtkTreeIter *parent = (GtkTreeIter*) data;
+
+  string query = "SELECT DISTINCT id,path,artist,title,year,cover FROM albums JOIN tags ON albums.id = tags.albumid WHERE tag = '";
+  query += argv[0];
+  query += "'AND number > 15 ORDER BY artist, year ASC";
+  
+	gtk_tree_store_insert_with_values(tstore, NULL, parent, 10000, 
+							COL_TEXT, g_strdup(argv[0]), 
+							COL_QUERY, g_strdup(query.c_str()), -1);		
+
+  return 0;
+}
+
 int albums_execute_query_cb(void *data, int argc, char **argv, char **azColName)
 {
 	if (argc < 1)
