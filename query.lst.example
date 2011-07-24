@@ -1,0 +1,4 @@
+[by tag]
+rock=SELECT DISTINCT id,path,artist,title,year,cover FROM albums JOIN tags ON albums.id = tags.albumid WHERE tag LIKE '%rock%' AND number > 50 ORDER BY artist, year ASC
+female=SELECT DISTINCT id,path,artist,title,year,cover FROM albums JOIN tags ON albums.id = tags.albumid WHERE tag LIKE '%female%' AND number > 30 ORDER BY artist, year ASC
+dubstep=SELECT DISTINCT id,path,artist,title,year,cover FROM albums JOIN tags ON albums.id = tags.albumid WHERE tag LIKE '%dubstep%' AND number > 15 ORDER BY artist, year ASC
