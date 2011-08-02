@@ -57,13 +57,13 @@ gboolean entry_key_pressed(GtkWidget *entry, GdkEventKey *event, gpointer data)
 	const gchar *query = gtk_entry_get_text(GTK_ENTRY(entry));
 	string *result = (string*) data;
 	
-	if(event->keyval == GDK_Escape) {
+	if(event->keyval == GDK_KEY_Escape) {
 		result->erase();
 		gtk_widget_destroy(window);
 		return FALSE;
 	}
 		
-	if(event->keyval != GDK_Return)
+	if(event->keyval != GDK_KEY_Return)
 		return FALSE;
 	
 	if(g_utf8_collate(query, "") == 0)

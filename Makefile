@@ -7,8 +7,8 @@ VERSION=0.4.2alpha1
 PREFIX=/usr/local
 CC=gcc
 CPP=g++
-CPPFLAGS=`pkg-config --cflags gtk+-2.0` -Wall -g -D _DEBUG_
-LDFLAGS=`pkg-config --libs gtk+-2.0` `pkg-config --libs sqlite3` /usr/lib/libjpeg.so
+CPPFLAGS=`pkg-config --cflags gtk+-3.0` -Wall -g -D _DEBUG_
+LDFLAGS=`pkg-config --libs gtk+-3.0` `pkg-config --libs sqlite3` /usr/lib/libjpeg.so
 
 all: clean gmp3view
 

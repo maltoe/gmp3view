@@ -373,7 +373,7 @@ GtkListStore *create_istore()
 
 gboolean iv_key_pressed(GtkWidget *iv, GdkEventKey *event, gpointer data)
 {
-	if(event->keyval == GDK_Return)
+	if(event->keyval == GDK_KEY_Return)
 		gtk_icon_view_selected_foreach(GTK_ICON_VIEW(iv), (GtkIconViewForeachFunc) add_em_all, NULL);
 	
 	return FALSE;
@@ -559,10 +559,10 @@ GtkWidget *prepare_typeahead(void) {
 gboolean typeahead_key_released(GtkWidget *typeahead, GdkEventKey *event, gpointer data)
 {
 	switch(event->keyval) {
-		case GDK_Return:
+		case GDK_KEY_Return:
 			gtk_icon_view_selected_foreach(GTK_ICON_VIEW(iv), (GtkIconViewForeachFunc) add_em_all, NULL);
 			break;
-		case GDK_Escape:
+		case GDK_KEY_Escape:
 			gtk_entry_set_text(GTK_ENTRY(typeahead), "");
 			break;
 		default:
