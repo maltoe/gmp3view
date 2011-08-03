@@ -116,6 +116,24 @@ GtkWidget *prepare_window(void)
 	g_signal_connect(G_OBJECT(window), "destroy",
 			 G_CALLBACK(destroy), NULL);
 
+	/* set css style */
+	string css = getenv("HOME");
+	css += CFG_PREFIX;
+	css += STYLESHEET;
+	GtkCssProvider *cssp = gtk_css_provider_new();
+	GError *err = NULL;
+	if(gtk_css_provider_load_from_path(cssp, css.c_str(), &err) != TRUE) {
+		if(err->domain == G_FILE_ERROR && err->code == G_FILE_ERROR_NOENT)
+			cout << "No stylesheet found." << endl;
+		else
+			cerr << err->message << endl;
+		g_error_free(err);
+	} else {
+		gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(cssp), GTK_STYLE_PROVIDER_PRIORITY_USER);
+	}
+
+	/* create widgets */
+
 	GtkWidget *tv = prepare_treeview();		
 	GtkWidget *search = prepare_search();
 	GtkWidget *iv = prepare_iconview();
@@ -333,7 +351,8 @@ gboolean tv_button_pressed(GtkWidget *tv, GdkEventButton *event, gpointer data)
 //}}}
 
 //{{{ Iconview
-GtkWidget *prepare_iconview(void) {
+GtkWidget *prepare_iconview(void) 
+{
 	/* Prepare ListStore */
 	GtkListStore *istore = create_istore();
 	
