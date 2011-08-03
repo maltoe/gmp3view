@@ -7,6 +7,7 @@
 #define STYLESHEET "style.css"									/* this file keeps additionals css styles to apply to the widgets */
 #define MP3_IMAGE "/usr/local/share/gmp3view/mp3.png"			/* This file is shown as a mp3 file's icon */
 #define NUM_TAGS 12												/* Adjust to read more tags (set to <=0 for all tags)*/
+#define THUMB_SIZE 160											/* thumbnails are scaled to THUMBSIZE*THUMBSIZE */
 
 #define LASTFM_KEY "f263e056c82addecb074209a1fa97977"
 

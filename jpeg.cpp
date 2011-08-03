@@ -28,22 +28,22 @@ using namespace std;
 #include "imageio/jmem_dest.h"
 #include "imageio/jmem_src.h"
 #include "jpeg.h"
+#include "config.h"
 
 extern size_t bytes_written;
 
-int jpeg_compress (unsigned char *src, unsigned char *dst, size_t size)
+int jpeg_compress (unsigned char *src, unsigned char *dst, size_t size, unsigned int rowstride)
 {
 	struct jpeg_compress_struct cinfo;
 	struct jpeg_error_mgr jerr;
-	int row_stride = 600;
 	JSAMPROW row_pointer[1];
 	
 	cinfo.err = jpeg_std_error(&jerr);
 	jpeg_create_compress(&cinfo);
 	
 	/* Image description */
-	cinfo.image_width = 200;
-	cinfo.image_height = 200;
+	cinfo.image_width = THUMB_SIZE;
+	cinfo.image_height = THUMB_SIZE;
 	cinfo.input_components = 3;
 	cinfo.in_color_space = JCS_RGB;
 	
@@ -57,7 +57,7 @@ int jpeg_compress (unsigned char *src, unsigned char *dst, size_t size)
 	/* Compress */
 	jpeg_start_compress(&cinfo, TRUE);
 	while (cinfo.next_scanline < cinfo.image_height) {
-		row_pointer[0] = &src[cinfo.next_scanline * row_stride];
+		row_pointer[0] = &src[cinfo.next_scanline * rowstride];
 		jpeg_write_scanlines(&cinfo, row_pointer, 1);		
 	}	
 	jpeg_finish_compress(&cinfo);
@@ -83,14 +83,14 @@ unsigned char *jpeg_decompress(const unsigned char *src, size_t n_bytes)
 	/* This somehow does not work */
 	jpeg_read_header(&cinfo, TRUE);
 	/* Therefore we set these values explicitly */
-	cinfo.image_width = 200;
-	cinfo.image_height = 200;
-	cinfo.output_height = 200;
-	cinfo.output_width = 200;
+	cinfo.image_width = THUMB_SIZE;
+	cinfo.image_height = THUMB_SIZE;
+	cinfo.output_height = THUMB_SIZE;
+	cinfo.output_width = THUMB_SIZE;
 	cinfo.output_components = 3;
 	row_stride = cinfo.output_width * cinfo.output_components;
 	
-	unsigned char *dst = new unsigned char[200 * 200 * 3];	
+	unsigned char *dst = new unsigned char[THUMB_SIZE * THUMB_SIZE * 3];	
 
 	buffer = cinfo.mem->alloc_sarray((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
 		

@@ -166,10 +166,10 @@ int add_album_real(string letter, string album)
 	cover = load_image(path_to_cover);
 	if(cover) {
 		guchar *pixels = gdk_pixbuf_get_pixels(cover);
-		unsigned int numbytes = gdk_pixbuf_get_rowstride(cover) * gdk_pixbuf_get_height(cover);
-		
-		guchar *buf = g_new(guchar, 50000);
-		numbytes = jpeg_compress(pixels, buf, 50000);
+	//	unsigned int numbytes = gdk_pixbuf_get_rowstride(cover) * gdk_pixbuf_get_height(cover);
+	//	cout << "rowstride: " << gdk_pixbuf_get_rowstride(cover) << endl;
+		guchar *buf = g_new(guchar, 60000);
+		unsigned int numbytes = jpeg_compress(pixels, buf, 60000, gdk_pixbuf_get_rowstride(cover));
 		
 		string buf64 = base64_encode(buf, numbytes);
 		
@@ -438,7 +438,7 @@ GdkPixbuf *load_image(string path)
 {
 	GdkPixbuf *ret;
 	GError *error = NULL;
-	ret = gdk_pixbuf_new_from_file_at_scale(path.c_str(), 200, 200, FALSE, &error);
+	ret = gdk_pixbuf_new_from_file_at_scale(path.c_str(), THUMB_SIZE, THUMB_SIZE, FALSE, &error);
 	if (!ret) {
 		if (error->code != 4)
 			cerr << error->message << endl;

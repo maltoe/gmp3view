@@ -60,6 +60,7 @@ void search_clicked(GtkButton *button, gpointer data);
 GtkWidget *prepare_typeahead(void);
 gboolean typeahead_key_released(GtkWidget *typeahead, GdkEventKey *event, gpointer data);
 string ToUpper(string str);
+void free_pixbuf(guchar *pixels, gpointer data);
 int tstore_tags_cb(void *data, int argc, char **argv, char **azColName);
 int albums_execute_query_cb(void *data, int argc, char **argv, char **azColName);
 int tooltip_execute_query_cb(void *data, int argc, char **argv, char **azColName);
@@ -642,6 +643,14 @@ string ToUpper(string str)
 }
 //}}}
 
+//{{{ destructors
+void free_pixbuf(guchar *pixels, gpointer data)
+{
+	g_free(pixels);
+}
+
+//}}}
+
 //{{{ SQL callbacks
 int tstore_tags_cb(void *data, int argc, char **argv, char **azColName)
 {
@@ -693,8 +702,8 @@ int albums_execute_query_cb(void *data, int argc, char **argv, char **azColName)
 			g_free(buf);
 			
 			GdkPixbuf *pixbuf = gdk_pixbuf_new_from_data(pixels, GDK_COLORSPACE_RGB, 
-					FALSE, 8, 200, 200, (200 * 3), 
-					NULL, NULL); 
+					FALSE, 8, THUMB_SIZE, THUMB_SIZE, (THUMB_SIZE * 3), 
+					free_pixbuf, NULL); 
 			gtk_list_store_set(istore, &iter, COL_PIXBUF, pixbuf, -1);
 		} else if(g_utf8_collate(azColName[i], "id") == 0) {
 			id = argv[i];
